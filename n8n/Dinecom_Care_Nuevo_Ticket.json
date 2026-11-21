@@ -1,0 +1,298 @@
+{
+  "name": "Dinecom_Care_Nuevo_Ticket",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nuevo-ticket",
+        "options": {}
+      },
+      "id": "d7992b48-187b-48bc-957e-0b960a892728",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        80
+      ],
+      "webhookId": "633e70c3-291b-473d-aeb4-8e4f3f93f44c"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO ticket (\n  id_contacto,\n  id_sala,\n  id_agente_asignado,\n  id_prioridad,\n  canal_origen,\n  detalle_problema,\n  diagnostico_primario,\n  nivel_escalamiento,\n  fecha_creacion\n) VALUES (\n  {{ $json.body.id_contacto }},\n  {{ $json.body.id_sala }},\n  {{ $json.body.id_agente_asignado }},\n  {{ $json.body.id_prioridad }},\n  '{{ $json.body.canal_origen }}',\n  '{{ $json.body.detalle_problema }}',\n  '{{ $json.body.diagnostico_primario }}',\n  '{{ $json.body.nivel_escalamiento }}',\n  NOW()\n);",
+        "options": {}
+      },
+      "id": "1a446b8c-d7a8-484b-8921-d97cc366f33c",
+      "name": "Insertar_Ticket",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        272,
+        192
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "yX1tmdm7OnOTmefv",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO historial_estado (\n  id_ticket,\n  id_agente,\n  estado,\n  comentario,\n  fecha_hora\n) VALUES (\n  (SELECT MAX(id_ticket) FROM ticket),\n  {{ $('Webhook').item.json.body.id_agente_asignado }},\n  'Abierto',\n  'Ticket ingresado automaticamente via Webhook n8n',\n  NOW()\n);",
+        "options": {}
+      },
+      "id": "0fc36437-c4d1-40e5-8084-64745b7448b9",
+      "name": "Insertar_Historial",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        496,
+        192
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "yX1tmdm7OnOTmefv",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Webhook').item.json.body.requiere_alerta_gerencia }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "73c21774-d16f-4102-9297-503e7e11c5f4",
+      "name": "Es_Critico",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        752,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "<__PLACEHOLDER_VALUE__Sender email address__>",
+        "toEmail": "gerente.dinecom.test@gmail.com",
+        "subject": "=ALERTA CRITICA (SLA 4h) - Folio",
+        "emailFormat": "text",
+        "text": "=Estimado Cristian Cornejo, se ha registrado un incidente CRITICO (Folio). Problema: {{ $('Webhook').item.json.body.detalle_problema }}",
+        "options": {}
+      },
+      "id": "628cd783-84ad-4e87-8f86-8a0fd0442001",
+      "name": "Alerta_Gerente",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        0
+      ],
+      "webhookId": "5a6652cf-532c-4bd2-b79a-7fc5ab47e23e",
+      "credentials": {
+        "smtp": {
+          "id": "VQVD3ItgJxBs1hsi",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO notificacion (\n  id_ticket,\n  destinatario_tipo,\n  tipo,\n  fecha_envio\n) VALUES (\n  (SELECT MAX(id_ticket) FROM ticket),\n  'Gerencia',\n  'Alerta Critica',\n  NOW()\n);",
+        "options": {}
+      },
+      "id": "5a71e316-7a20-442f-862c-da6b540d978f",
+      "name": "Log_Notif_Gerencia",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        1200,
+        0
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "yX1tmdm7OnOTmefv",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "marisol46@ethereal.email",
+        "toEmail": "={{ $('Webhook').item.json.body.correo_contacto }}",
+        "subject": "=Dinecom Care - Confirmacion Ticket",
+        "emailFormat": "text",
+        "text": "=Hola {{ $('Webhook').item.json.body.nombre_contacto }}, tu solicitud de soporte fue registrada en estado Abierto. Prioridad: {{ $('Webhook').item.json.body.prioridad_nombre }}.",
+        "options": {}
+      },
+      "id": "9ee89a64-6ee7-436f-9431-7eed6a0e1311",
+      "name": "Correo_Cliente",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1424,
+        80
+      ],
+      "webhookId": "87f6f38e-0c9d-4b7b-b522-c82e5cec0439",
+      "credentials": {
+        "smtp": {
+          "id": "VQVD3ItgJxBs1hsi",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO notificacion (\n  id_ticket,\n  destinatario_tipo,\n  tipo,\n  fecha_envio\n) VALUES (\n  (SELECT MAX(id_ticket) FROM ticket),\n  'Cliente',\n  'Creacion',\n  NOW()\n);",
+        "options": {}
+      },
+      "id": "00d0626e-85e8-4f66-b34b-7f8fe54602e3",
+      "name": "Log_Notif_Cliente",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        1648,
+        80
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "yX1tmdm7OnOTmefv",
+          "name": "MySQL account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Insertar_Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insertar_Ticket": {
+      "main": [
+        [
+          {
+            "node": "Insertar_Historial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insertar_Historial": {
+      "main": [
+        [
+          {
+            "node": "Es_Critico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es_Critico": {
+      "main": [
+        [
+          {
+            "node": "Alerta_Gerente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Correo_Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alerta_Gerente": {
+      "main": [
+        [
+          {
+            "node": "Log_Notif_Gerencia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log_Notif_Gerencia": {
+      "main": [
+        [
+          {
+            "node": "Correo_Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Correo_Cliente": {
+      "main": [
+        [
+          {
+            "node": "Log_Notif_Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "44e31f35-1ac3-4635-b7f0-ca7993e60dce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e2baecbf81e511ae9ec765525761b51ef1a6ea733b80bdeeb1fc6bd467e5c174"
+  },
+  "nodeGroups": [
+    {
+      "id": "33f976d4-44af-4add-8a74-7e9517f7fa85",
+      "name": "Registrar ticket",
+      "nodeIds": [
+        "1a446b8c-d7a8-484b-8921-d97cc366f33c",
+        "0fc36437-c4d1-40e5-8084-64745b7448b9"
+      ],
+      "description": "Guarda el ticket recibido por webhook y su primer estado Abierto en la base de datos"
+    }
+  ],
+  "id": "v8WReiYulC56Uup2",
+  "tags": []
+}

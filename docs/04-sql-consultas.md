@@ -13,7 +13,7 @@
 
 Los datos son sintéticos. El nombre del Gerente de Servicios corresponde a la persona del caso; su correo y el resto de los datos son ficticios.
 
-- **Volumen cargado:** 5 clientes, 6 contactos, 7 salas, 3 roles, 5 agentes, 4 niveles de prioridad/SLA, 15 tickets (13 cerrados y 2 críticos activos), 37 eventos de historial, 3 garantías RMA (Cisco, Kramer, Poly) y 9 notificaciones.
+- **Volumen cargado:** 5 clientes, 6 contactos, 7 salas, 3 roles, 5 agentes, 4 niveles de prioridad/SLA, 15 tickets (13 cerrados y 2 críticos activos), 37 eventos de historial, 3 garantías RMA (Cisco, Kramer, Poly) y 12 notificaciones (incluyen la alerta crítica a gerencia de cada uno de los 7 tickets críticos, según RF3).
 
 ## 3. Cómo reproducir los resultados
 

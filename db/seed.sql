@@ -1,4 +1,3 @@
-
 USE dinecom_sig;
 
 INSERT INTO cliente (id_cliente, razon_social, rubro) VALUES
@@ -113,12 +112,18 @@ INSERT INTO garantia (id_garantia, id_ticket, fabricante, fecha_envio, fecha_ret
 (3, 15, 'Poly',   '2026-11-20', NULL,         'En revision');
 
 INSERT INTO notificacion (id_notificacion, id_ticket, destinatario_tipo, tipo, fecha_envio) VALUES
-(1, 1,  'Cliente',  'Creacion',       '2026-10-01 08:30:05'),
-(2, 1,  'Gerencia', 'Alerta Critica', '2026-10-01 08:30:06'),
-(3, 1,  'Cliente',  'Cierre',         '2026-10-01 09:15:10'),
-(4, 9,  'Gerencia', 'Alerta Critica', '2026-10-12 08:30:05'),
-(5, 9,  'Cliente',  'Cierre',         '2026-10-12 14:30:10'),
-(6, 12, 'Gerencia', 'Alerta Critica', '2026-10-20 09:00:05'),
-(7, 12, 'Cliente',  'Cierre',         '2026-10-22 15:00:10'),
-(8, 15, 'Cliente',  'Creacion',       '2026-11-20 09:00:05'),
-(9, 15, 'Gerencia', 'Alerta Critica', '2026-11-20 09:00:06');
+(1,  1,  'Cliente',  'Creacion',       '2026-10-01 08:30:05'),
+(2,  1,  'Gerencia', 'Alerta Critica', '2026-10-01 08:30:06'),
+(3,  1,  'Cliente',  'Cierre',         '2026-10-01 09:15:10'),
+(4,  3,  'Gerencia', 'Alerta Critica', '2026-10-03 09:00:05'),
+(5,  8,  'Gerencia', 'Alerta Critica', '2026-10-09 08:00:05'),
+(6,  9,  'Gerencia', 'Alerta Critica', '2026-10-12 08:30:05'),
+(7,  9,  'Cliente',  'Cierre',         '2026-10-12 14:30:10'),
+(8,  12, 'Gerencia', 'Alerta Critica', '2026-10-20 09:00:05'),
+(9,  12, 'Cliente',  'Cierre',         '2026-10-22 15:00:10'),
+(10, 14, 'Gerencia', 'Alerta Critica', '2026-11-19 15:00:05'),
+(11, 15, 'Cliente',  'Creacion',       '2026-11-20 09:00:05'),
+(12, 15, 'Gerencia', 'Alerta Critica', '2026-11-20 09:00:06');
+
+
+
