@@ -36,7 +36,7 @@ El sistema gestiona tickets de soporte técnico y garantías de las salas de reu
 
 ### Requisitos
 
-- **MySQL 8.0.16 o superior** (desde esa versión se aplican las restricciones `CHECK`). Se probó con MySQL 8.0.
+- **MySQL 8.0.16 o superior** (desde esa versión se aplican las restricciones `CHECK`). Se probó con MySQL 26.10.0 Community Server.
 - **Git**.
 - Opcional: MySQL Workbench.
 
