@@ -28,6 +28,19 @@ El flujo está estructurado en ocho nodos encadenados que combinan operaciones d
 | 7 | `Correo_Cliente` | Send Email (SMTP) | Punto de convergencia: envía el comprobante de creación del ticket al correo del contacto solicitante. |
 | 8 | `Log_Notif_Cliente` | MySQL (Execute Query) | Audita la confirmación al usuario en `notificacion` (destinatario `Cliente`, tipo `Creacion`). |
 
+### Trazabilidad con las tareas automáticas del BPMN to-be
+
+Las tareas con engranaje del BPMN final (A1 a A6, ver [`02-bpmn.md`](02-bpmn.md)) se relacionan con el flujo así:
+
+| Tarea BPMN | Qué hace | Nodos n8n | Estado |
+| :-: | :--- | :--- | :--- |
+| A1 | Recibe la solicitud y crea el ticket con folio, fecha y hora | `Webhook`, `Insertar_Ticket`, `Insertar_Historial` | Implementada |
+| A2 | Envía al cliente el correo de ticket creado | `Correo_Cliente`, `Log_Notif_Cliente` | Implementada |
+| A3 | Define el nivel de escalamiento y la criticidad | Ninguno: la prioridad y el nivel llegan en el JSON de entrada, y `Es_Critico` solo lee el campo `requiere_alerta_gerencia` | Parcial |
+| A4 | Si el caso es crítico, alerta al Gerente | `Es_Critico`, `Alerta_Gerente`, `Log_Notif_Gerencia` | Implementada |
+| A5 | Pasa el ticket a `Cerrado` y guarda fecha y tiempos | Ninguno | No implementada |
+| A6 | Envía al cliente el correo de cierre | Ninguno | No implementada |
+
 ## 3. Integración transaccional y reglas de integridad
 
 Para ser compatibles con las restricciones definidas en el esquema relacional, las consultas SQL de n8n respetan los dominios cerrados establecidos mediante cláusulas `CHECK` (sin acentos gráficos en los valores de catálogo) y vinculan cada registro secundario al último folio creado mediante la expresión `(SELECT MAX(id_ticket) FROM ticket)`.

@@ -94,8 +94,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "<__PLACEHOLDER_VALUE__Sender email address__>",
-        "toEmail": "gerente.dinecom.test@gmail.com",
+        "fromEmail": "marisol46@ethereal.email",
+        "toEmail": "ccornejo@dinecom-demo.cl",
         "subject": "=ALERTA CRITICA (SLA 4h) - Folio",
         "emailFormat": "text",
         "text": "=Estimado Cristian Cornejo, se ha registrado un incidente CRITICO (Folio). Problema: {{ $('Webhook').item.json.body.detalle_problema }}",
@@ -277,7 +277,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "44e31f35-1ac3-4635-b7f0-ca7993e60dce",
+  "versionId": "aa1a9975-4919-4c2b-8bdd-6ddc5dc53c74",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e2baecbf81e511ae9ec765525761b51ef1a6ea733b80bdeeb1fc6bd467e5c174"
